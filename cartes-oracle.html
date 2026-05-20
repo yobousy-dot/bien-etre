@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle du Lotus — Harmonie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:      #0d1b2e;
+  --navy-mid:  #12243d;
+  --gold:      #c9962a;
+  --gold-light:#e8c060;
+  --gold-pale: #f5e4b0;
+  --text-cream:#f5edd8;
+  --text-dark: #1a2640;
+  --text-gray: #2a3a52;
+  --shadow-gold: 0 0 40px rgba(201,150,42,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--navy);
+  color:var(--text-cream);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(201,150,42,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(201,150,42,.04) 0%, transparent 50%);
+}
+
+/* Étoiles */
+.stars { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.star  {
+  position:absolute; width:2px; height:2px; background:var(--gold-light); border-radius:50%; opacity:0;
+  animation:twinkle var(--d,4s) var(--delay,0s) infinite ease-in-out;
+}
+@keyframes twinkle { 0%,100%{opacity:0;transform:scale(1)} 50%{opacity:var(--op,.6);transform:scale(1.5)} }
+
+.wrap { max-width:1100px; margin:0 auto; padding:0 28px; position:relative; z-index:1; }
+
+/* Header */
+header { text-align:center; padding:48px 0 8px; }
+.eyebrow  { font-size:.75rem; letter-spacing:.25em; text-transform:uppercase; color:var(--gold); opacity:.8; margin-bottom:14px; }
+.otitle   { font-family:'Cormorant Garamond',serif; font-size:clamp(2.4rem,5vw,3.8rem); font-weight:300; color:var(--gold-light); letter-spacing:.06em; line-height:1.1; margin-bottom:10px; text-shadow:0 0 60px rgba(232,192,96,.3); }
+.osub     { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.05rem; color:rgba(245,237,216,.5); margin-bottom:28px; }
+
+/* Bouton retour */
+.home-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 20px; border:1px solid rgba(201,150,42,.35); border-radius:30px;
+  background:transparent; color:rgba(201,150,42,.7);
+  font-family:'DM Sans',sans-serif; font-size:.78rem; letter-spacing:.1em; text-transform:uppercase;
+  text-decoration:none; cursor:pointer; transition:all .3s ease; margin-bottom:32px;
+}
+.home-btn:hover { background:rgba(201,150,42,.12); color:var(--gold-light); border-color:var(--gold); }
+
+/* Séparateur */
+.gsep { display:flex; align-items:center; justify-content:center; gap:16px; margin:0 0 40px; }
+.gsep::before { content:''; width:80px; height:1px; background:linear-gradient(to right,transparent,var(--gold)); }
+.gsep::after  { content:''; width:80px; height:1px; background:linear-gradient(to left, transparent,var(--gold)); }
+.glotus { color:var(--gold); font-size:1rem; opacity:.8; }
+
+/* Bouton tirage */
+.draw-zone { text-align:center; margin-bottom:48px; }
+.draw-btn {
+  position:relative; display:inline-flex; align-items:center; gap:12px;
+  padding:18px 48px; background:transparent; border:1px solid var(--gold);
+  color:var(--gold-light); font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem; letter-spacing:.15em; text-transform:uppercase;
+  cursor:pointer; transition:all .4s ease; overflow:hidden;
+}
+.draw-btn::before { content:''; position:absolute; inset:0; background:var(--gold); transform:scaleX(0); transform-origin:left; transition:transform .4s ease; z-index:0; }
+.draw-btn:hover::before { transform:scaleX(1); }
+.draw-btn:hover { color:var(--navy); }
+.draw-btn > * { position:relative; z-index:1; }
+.draw-ico { font-size:1.2rem; transition:transform .4s ease; }
+.draw-btn:hover .draw-ico { transform:rotate(20deg) scale(1.2); }
+.counter { margin-top:16px; font-size:.78rem; letter-spacing:.12em; color:rgba(201,150,42,.45); text-transform:uppercase; }
+
+/* Carte flip */
+.card-stage  { perspective:1200px; width:320px; height:520px; margin:0 auto 24px; cursor:pointer; }
+.card-inner  { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .8s cubic-bezier(.4,.2,.2,1); }
+.card-inner.flipped { transform:rotateY(180deg); }
+.card-face   { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:4px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+
+/* Verso */
+.card-back img { width:100%; height:100%; object-fit:cover; display:block; }
+
+/* Recto */
+.card-front { transform:rotateY(180deg); }
+.card-bg    { position:absolute; inset:0; background-size:cover; background-position:center; }
+
+/* Bloc texte centré avec fond semi-transparent */
+.card-content {
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; padding:40px 28px; text-align:center;
+}
+.card-text-box {
+  padding:24px 22px; border-radius:6px;
+  display:flex; flex-direction:column; align-items:center; gap:0;
+  width:100%;
+  backdrop-filter:blur(2px);
+}
+
+/* Variante crème (recto1 parchemin) */
+.card-front.cream .card-text-box {
+  background:rgba(247,237,216,.85);
+  border:1px solid rgba(201,150,42,.3);
+}
+.card-front.cream .card-num  { font-size:.58rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); opacity:.85; margin-bottom:12px; }
+.card-front.cream .card-lotus{ font-size:1.2rem; margin-bottom:10px; opacity:.6; }
+.card-front.cream .card-name { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:var(--text-dark); letter-spacing:.04em; line-height:1.2; margin-bottom:12px; text-shadow:0 0 5px rgba(0,0,0,0.2); }
+.card-front.cream .card-div  { width:30px; height:1px; background:var(--gold); opacity:.6; margin-bottom:12px; }
+.card-front.cream .card-msg  {
+  font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:400;
+  font-size:1rem; line-height:1.8; color:var(--text-gray);
+  text-shadow:0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Variante navy (recto2 bleu nuit) */
+.card-front.dark .card-text-box {
+  background:rgba(10,20,38,.8);
+  border:1px solid rgba(201,150,42,.3);
+}
+.card-front.dark .card-num  { font-size:.58rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold-light); opacity:.9; margin-bottom:12px; }
+.card-front.dark .card-lotus{ font-size:1.2rem; margin-bottom:10px; opacity:.7; }
+.card-front.dark .card-name {
+  font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600;
+  color:var(--gold-light); letter-spacing:.04em; line-height:1.2; margin-bottom:12px;
+  text-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+.card-front.dark .card-div  { width:30px; height:1px; background:var(--gold); opacity:.6; margin-bottom:12px; }
+.card-front.dark .card-msg  {
+  font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300;
+  font-size:1rem; line-height:1.8; color:var(--text-cream);
+  text-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Indice flip */
+.flip-hint {
+  text-align:center; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase;
+  color:rgba(201,150,42,.45); margin-bottom:48px;
+  animation:phint 2s ease-in-out infinite;
+}
+@keyframes phint { 0%,100%{opacity:.4} 50%{opacity:.9} }
+.flip-hint.hidden { visibility:hidden; }
+
+/* Grille 52 cartes */
+.all-section { margin-bottom:72px; }
+.all-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:300; color:var(--gold-light); text-align:center; letter-spacing:.08em; margin-bottom:6px; }
+.all-sub   { text-align:center; font-size:.78rem; color:rgba(201,150,42,.4); letter-spacing:.12em; text-transform:uppercase; margin-bottom:28px; }
+.grid      { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+
+.mini-card {
+  aspect-ratio:3/5; position:relative; border-radius:4px; overflow:hidden;
+  cursor:pointer; box-shadow:0 8px 24px rgba(0,0,0,.4);
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.mini-card:hover { transform:translateY(-6px) scale(1.02); box-shadow:0 16px 40px rgba(0,0,0,.5),var(--shadow-gold); }
+.mini-bg   { position:absolute; inset:0; background-size:cover; background-position:center; }
+.mini-rest { position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:9px; }
+.mini-badge {
+  font-family:'Cormorant Garamond',serif; font-size:.68rem; letter-spacing:.1em;
+  color:var(--gold-pale); background:rgba(13,27,46,.6); padding:3px 10px;
+  border-radius:20px; border:1px solid rgba(201,150,42,.3);
+}
+
+/* Modal */
+.modal-overlay {
+  position:fixed; inset:0; z-index:100; background:rgba(5,10,20,.95);
+  display:none; align-items:center; justify-content:center; padding:20px;
+  backdrop-filter:blur(8px);
+}
+.modal-overlay.open { display:flex; animation:fadeOv .3s ease; }
+@keyframes fadeOv { from{opacity:0} to{opacity:1} }
+
+.modal-box {
+  display:flex; max-width:780px; width:100%;
+  border-radius:6px; overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(201,150,42,.2);
+  animation:mIn .4s cubic-bezier(.34,1.3,.64,1);
+  max-height:90vh;
+}
+@keyframes mIn { from{opacity:0;transform:scale(.9) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+.modal-img { width:270px; flex-shrink:0; background-size:cover; background-position:center; min-height:460px; }
+
+.modal-text {
+  flex:1; padding:44px 36px 36px;
+  display:flex; flex-direction:column; justify-content:center;
+  position:relative; overflow-y:auto;
+  backdrop-filter:blur(2px);
+}
+.modal-box.cream-modal .modal-text { background:rgba(247,237,216,.9); }
+.modal-box.dark-modal  .modal-text { background:rgba(13,27,46,.9); }
+
+.modal-close {
+  position:absolute; top:14px; right:14px;
+  background:rgba(201,150,42,.1); border:1px solid rgba(201,150,42,.3);
+  color:var(--gold); width:32px; height:32px; border-radius:50%;
+  font-size:.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .25s ease;
+}
+.modal-close:hover { background:var(--gold); color:var(--navy); }
+
+.modal-num   { font-size:.62rem; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); opacity:.75; margin-bottom:20px; }
+.modal-lotus { font-size:1.6rem; margin-bottom:14px; opacity:.5; }
+.modal-name  {
+  font-family:'Cormorant Garamond',serif; font-size:1.85rem; font-weight:600;
+  line-height:1.2; letter-spacing:.03em; margin-bottom:20px;
+}
+.modal-div   { width:40px; height:1px; background:var(--gold); opacity:.5; margin-bottom:20px; }
+.modal-msg   {
+  font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300;
+  font-size:1.1rem; line-height:1.9;
+}
+
+/* Couleurs texte selon variante */
+.modal-box.cream-modal .modal-name { color:var(--text-dark); }
+.modal-box.cream-modal .modal-msg  { color:var(--text-gray); }
+.modal-box.dark-modal  .modal-name { color:var(--gold-light); text-shadow:0 0 10px rgba(0,0,0,0.5); }
+.modal-box.dark-modal  .modal-msg  { color:var(--text-cream); text-shadow:0 0 10px rgba(0,0,0,0.5); }
+
+footer {
+  text-align:center; padding:30px 0;
+  color:rgba(201,150,42,.3); font-size:.73rem; letter-spacing:.1em;
+  border-top:1px solid rgba(201,150,42,.1); position:relative; z-index:1;
+}
+
+@media(max-width:640px){
+  .card-stage { width:270px; height:437px; }
+  .grid { grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; }
+  .modal-box { flex-direction:column; overflow-y:auto; }
+  .modal-img { width:100%; min-height:220px; }
+  .modal-text { padding:28px 22px; }
+  .modal-name { font-size:1.5rem; }
+  .modal-msg  { font-size:1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">✦ Harmonie ✦</div>
+    <h1 class="otitle">Oracle du Lotus</h1>
+    <p class="osub">Laisse l'univers choisir le message de ton âme</p>
+    <a href="index.html" class="home-btn">← Retour à l'accueil</a>
+    <div class="gsep"><span class="glotus">✿</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Tirage -->
+  <div class="draw-zone">
+    <button class="draw-btn" onclick="drawCard()">
+      <span class="draw-ico">✦</span>
+      <span>Tirer une carte</span>
+    </button>
+    <div class="counter" id="counter">52 cartes · tirez pour commencer</div>
+  </div>
+
+  <!-- Carte flip -->
+  <div class="card-stage" id="cardStage" onclick="flipCard()" style="display:none;">
+    <div class="card-inner" id="cardInner">
+      <!-- Verso -->
+      <div class="card-face card-back">
+        <img src="carte-verso1.png" alt="Verso">
+      </div>
+      <!-- Recto -->
+      <div class="card-face card-front" id="cardFront">
+        <div class="card-bg" id="cardBg"></div>
+        <div class="card-content">
+          <div class="card-text-box">
+            <div class="card-num" id="cardNum"></div>
+            <div class="card-lotus">✿</div>
+            <div class="card-name" id="cardName"></div>
+            <div class="card-div"></div>
+            <div class="card-msg" id="cardMsg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flip-hint hidden" id="flipHint">✦ &nbsp; Cliquer pour révéler &nbsp; ✦</div>
+
+  <div class="gsep" style="margin-bottom:52px;"><span class="glotus">✿</span></div>
+
+  <!-- Grille 52 cartes -->
+  <div class="all-section">
+    <h2 class="all-title">Les 52 cartes de l'Oracle</h2>
+    <p class="all-sub">Cliquer pour lire le message</p>
+    <div class="grid" id="cardsGrid"></div>
+  </div>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeMod(event)">
+  <div class="modal-box" id="modalBox" onclick="event.stopPropagation()">
+    <div class="modal-img" id="modalImg"></div>
+    <div class="modal-text">
+      <button class="modal-close" onclick="closeMod()">✕</button>
+      <div class="modal-num" id="modalNum"></div>
+      <div class="modal-lotus">✿</div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-div"></div>
+      <div class="modal-msg" id="modalMsg"></div>
+    </div>
+  </div>
+</div>
+
+<footer><p>© 2026 Harmonie — Oracle du Lotus · 52 messages pour l'âme</p></footer>
+
+<script>
+// Données des 52 cartes
+var CARDS = [
+  ["L'Éveil du Lotus", "Une lumière discrète s'ouvre en toi. Même dans le silence, ton âme continue de fleurir. Fais confiance à ce renouveau intérieur."],
+  ["La Porte Invisible", "Certaines opportunités ne se voient qu'avec le cœur. Un passage secret s'ouvre bientôt devant toi."],
+  ["L'Étoile Intérieure", "Tu portes une sagesse ancienne que rien ne peut éteindre. Écoute cette petite voix qui murmure la vérité."],
+  ["Le Souffle Sacré", "Chaque respiration nettoie les peurs accumulées. Laisse l'énergie circuler librement en toi."],
+  ["La Lune Dorée", "Les réponses apparaîtront doucement, comme la lune dans la nuit. N'aie pas peur de l'inconnu."],
+  ["Le Jardin Caché", "Quelque chose de beau grandit dans l'ombre de ton cœur. Continue d'arroser tes rêves avec douceur."],
+  ["L'Oracle du Silence", "Le calme contient des messages que le bruit ne peut révéler. Offre-toi un instant de paix aujourd'hui."],
+  ["Le Fil du Destin", "Les rencontres et les événements de ta vie ne sont pas le fruit du hasard. Tout se relie au bon moment."],
+  ["La Flamme Bleue", "Une énergie de protection t'entoure actuellement. Tu es guidé vers ce qui élève ton âme."],
+  ["Le Temple Intérieur", "Ton corps et ton esprit sont un sanctuaire sacré. Honore ton énergie avec amour."],
+  ["Les Eaux Sacrées", "Les émotions qui traversent ton cœur viennent purifier ton chemin. Ne retiens pas ce qui doit être libéré."],
+  ["Le Papillon d'Or", "Une transformation profonde est déjà en cours. Même si tu ne la vois pas encore, elle agit."],
+  ["La Clef Cachée", "La solution que tu cherches existe déjà en toi. Observe ce qui revient souvent dans tes pensées."],
+  ["Le Soleil Secret", "Une joie inattendue approche. Autorise-toi à accueillir la lumière sans culpabilité."],
+  ["Le Miroir de l'Âme", "Ce que tu admires chez les autres vit aussi en toi. Reconnais enfin ta propre beauté intérieure."],
+  ["La Rose Mystique", "L'amour véritable commence lorsque tu cesses de te diminuer. Ton cœur mérite la tendresse."],
+  ["Le Cercle Sacré", "Tu n'es pas seul sur ton chemin. Des présences bienveillantes accompagnent tes pas."],
+  ["Le Vent des Possibles", "Le changement qui arrive apportera plus de liberté que de peur. Accueille le mouvement."],
+  ["La Source Lumineuse", "Ton énergie influence les lieux et les êtres autour de toi. Aujourd'hui, choisis la paix."],
+  ["Le Sablier Cosmique", "Tout arrive au moment juste. Ce qui tarde prépare souvent quelque chose de plus grand."],
+  ["Le Cristal Blanc", "Ton esprit retrouve peu à peu sa clarté. Une vérité importante va émerger."],
+  ["Le Chant des Étoiles", "L'univers répond à ton énergie plus que tu ne l'imagines. Continue d'émettre ce que tu souhaites recevoir."],
+  ["La Main de Lumière", "Tu peux demander de l'aide sans faiblesse. L'amour circule aussi à travers le soutien."],
+  ["L'Arcane du Cœur", "Ton intuition connaît déjà la direction. Fais-lui confiance même si la route semble floue."],
+  ["Le Voile Levé", "Une illusion se dissipe bientôt. Tu verras une situation avec une nouvelle conscience."],
+  ["La Perle Cachée", "Ce que tu considères comme une fragilité est en réalité un don précieux."],
+  ["Le Passage Sacré", "Tu entres dans une nouvelle étape de ton existence. L'ancien peut maintenant être laissé derrière."],
+  ["Le Feu Doux", "La passion revient lentement dans ton cœur. Nourris ce qui te fait vibrer."],
+  ["Le Refuge de l'Âme", "Le repos n'est pas une perte de temps. Il permet à ton énergie de se reconstruire."],
+  ["La Danse des Synchronicités", "Les signes autour de toi deviennent plus nombreux. Observe les coïncidences avec attention."],
+  ["Le Lotus Blanc", "Même après les épreuves, ton cœur reste capable d'aimer et de créer du beau."],
+  ["Le Rayon d'Ambre", "Une guérison émotionnelle profonde est en train de s'installer doucement en toi."],
+  ["Le Gardien Invisible", "Tu es plus protégé que tu ne le crois. Avance avec confiance."],
+  ["La Rivière Sacrée", "Cesse de lutter contre le courant. Certaines choses doivent simplement suivre leur mouvement naturel."],
+  ["L'Aube Nouvelle", "Une énergie fraîche entre dans ta vie. Quelque chose recommence avec plus de lumière."],
+  ["Le Livre Secret", "Ton histoire n'est pas terminée. De magnifiques pages restent encore à écrire."],
+  ["Le Cœur Alchimique", "Chaque blessure peut devenir une source de sagesse et de compassion."],
+  ["La Voix des Ancêtres", "Tu portes une force ancienne dans ton sang et dans ton âme. Souviens-toi de qui tu es."],
+  ["Le Jardin Lunaire", "Les rêves que tu nourris en silence prennent déjà racine dans l'invisible."],
+  ["Le Passage des Étoiles", "Une rencontre ou un événement marquera bientôt un tournant important."],
+  ["Le Cercle de Guérison", "Ton cœur se répare lentement, même lorsque tu as l'impression de stagner."],
+  ["La Brume Sacrée", "Tout n'a pas besoin d'être compris immédiatement. Certaines réponses arrivent avec le temps."],
+  ["Le Portail Doré", "Une nouvelle opportunité spirituelle ou émotionnelle s'approche de toi."],
+  ["La Main du Destin", "Ce qui semble être un détour est peut-être exactement ce dont ton âme avait besoin."],
+  ["Le Cocon de Lumière", "Protège ton énergie des pensées lourdes et des paroles négatives. Tu mérites la douceur."],
+  ["L'Onde Cristalline", "Tes émotions sont des messagers, pas des ennemis. Écoute-les avec bienveillance."],
+  ["Le Temple des Rêves", "Un désir profond cherche enfin à prendre sa place dans ta réalité."],
+  ["La Plume d'Or", "Les mots ont un pouvoir sacré aujourd'hui. Parle-toi avec amour."],
+  ["Le Ciel Ouvert", "Une bénédiction inattendue pourrait apparaître lorsque tu t'y attends le moins."],
+  ["La Couronne de Lumière", "Tu n'as rien à prouver pour mériter l'amour, la paix et l'abondance."],
+  ["Le Voyage Intérieur", "Chaque expérience te rapproche un peu plus de ta vérité profonde."],
+  ["L'Infini Sacré", "Tu es guidé, soutenu et aimé par une force plus grande que tes peurs."]
+];
+
+// Images des rectos/verso (à remplacer par vos URLs réelles)
+var RECTOS = ['carte-recto1.png', 'carte-recto2.png'];
+var VERSO = 'carte-verso1.png';
+
+// Helper pour formater le numéro
+function pad(n) { return String(n).padStart(2, '0'); }
+
+// Génération des étoiles
+(function() {
+  var c = document.getElementById('stars');
+  for (var i = 0; i < 60; i++) {
+    var s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.setProperty('--d', (3 + Math.random() * 5) + 's');
+    s.style.setProperty('--delay', (Math.random() * 6) + 's');
+    s.style.setProperty('--op', (0.3 + Math.random() * 0.6).toFixed(2));
+    c.appendChild(s);
+  }
+})();
+
+// Variables globales
+var drawnIdx = -1;
+var isFlipped = false;
+
+// Tirage d'une carte
+function drawCard() {
+  var idx;
+  do { idx = Math.floor(Math.random() * 52); } while (idx === drawnIdx && CARDS.length > 1);
+  drawnIdx = idx;
+  isFlipped = false;
+  document.getElementById('cardInner').classList.remove('flipped');
+
+  // Détermine la variante (cream/dark) en fonction de l'index
+  var variant = idx % 2 === 0 ? 'cream' : 'dark';
+  var front = document.getElementById('cardFront');
+  front.className = 'card-face card-front ' + variant;
+  document.getElementById('cardBg').style.backgroundImage = 'url(' + RECTOS[idx % 2] + ')';
+  document.getElementById('cardNum').textContent = 'Carte ' + pad(idx + 1) + ' · Oracle du Lotus';
+  document.getElementById('cardName').textContent = CARDS[idx][0];
+  document.getElementById('cardMsg').textContent = CARDS[idx][1];
+
+  var stage = document.getElementById('cardStage');
+  stage.style.display = 'block';
+  var hint = document.getElementById('flipHint');
+  hint.classList.remove('hidden');
+  hint.textContent = '✦   Cliquer pour révéler votre message   ✦';
+  setTimeout(function() {
+    stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
+  document.getElementById('counter').textContent = 'Carte n° ' + (idx + 1) + ' sur 52 · cliquer pour révéler';
+}
+
+// Retourner la carte
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('cardInner').classList.toggle('flipped', isFlipped);
+  document.getElementById('flipHint').textContent = isFlipped
+    ? '✦   Cliquer pour retourner   ✦'
+    : '✦   Cliquer pour révéler votre message   ✦';
+}
+
+// Construction de la grille
+(function buildGrid() {
+  var grid = document.getElementById('cardsGrid');
+  CARDS.forEach(function(card, i) {
+    var el = document.createElement('div');
+    el.className = 'mini-card';
+    el.onclick = function() { openMod(i); };
+    var bg = document.createElement('div');
+    bg.className = 'mini-bg';
+    bg.style.backgroundImage = 'url(' + VERSO + ')';
+    var rest = document.createElement('div');
+    rest.className = 'mini-rest';
+    rest.innerHTML = '<span class="mini-badge">' + pad(i + 1) + '</span>';
+    el.appendChild(bg);
+    el.appendChild(rest);
+    grid.appendChild(el);
+  });
+})();
+
+// Ouverture de la modal
+function openMod(idx) {
+  var variant = idx % 2 === 0 ? 'cream' : 'dark';
+  var box = document.getElementById('modalBox');
+  box.className = 'modal-box ' + variant + '-modal';
+  document.getElementById('modalImg').style.backgroundImage = 'url(' + RECTOS[idx % 2] + ')';
+  document.getElementById('modalNum').textContent = 'Carte ' + pad(idx + 1) + ' · Oracle du Lotus';
+  document.getElementById('modalName').textContent = CARDS[idx][0];
+  document.getElementById('modalMsg').textContent = CARDS[idx][1];
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// Fermeture de la modal
+function closeMod(e) {
+  if (e && e.target !== document.getElementById('modalOverlay') && e.type !== 'click') return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Fermeture avec la touche Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+</script>
+</body>
+</html>
